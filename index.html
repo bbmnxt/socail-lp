@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your App Name | Landing Page</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Swiper JS CSS -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -59,10 +56,8 @@
 
     <div class="container mx-auto px-4 py-4 flex flex-col min-h-screen max-w-lg">
         
-        <!-- Main Content -->
         <main class="flex-grow flex flex-col items-center justify-center text-center">
             
-            <!-- Marketing Text & CTA -->
             <div class="pt-10 mb-8 flex flex-col items-center justify-center text-center">
                 <h1 class="font-extrabold mb-10 text-[2.7rem] md:text-5xl leading-none md:leading-snug" style="color: #f5f5f7;">
                     UNLOCK THE<br>PRO WITHIN.
@@ -77,28 +72,22 @@
                 </div>
             </div>
 
-            <!-- Swiper Carousel Container -->
             <div class="swiper-container w-full overflow-hidden">
                 <div class="swiper-wrapper">
-                    <!-- Images will be loaded here by JavaScript -->
-                </div>
+                    </div>
             </div>
 
         </main>
     </div>
 
-    <!-- Swiper JS Script -->
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 
-    <!-- Supabase JS Script -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Initialize Swiper -->
     <script>
-        // --- 1. Supabase Configuration (Refactored for Netlify Build) ---
-        // These values are placeholders that Netlify will replace.
-        const SUPABASE_URL = '__SUPABASE_URL__'; 
-        const SUPABASE_ANON_KEY = '__SUPABASE_ANON_KEY__';
+        // --- 1. Supabase Configuration (FOR TESTING) ---
+        const SUPABASE_URL = 'https://wlfhxffpgtiwdtkojosi.supabase.co';      // 👈 PASTE YOUR ACTUAL URL HERE
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsZmh4ZmZwZ3Rpd2R0a29qb3NpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3OTM3MzQsImV4cCI6MjA3NDM2OTczNH0.V8aXk_aDQ4iEkGnh3TZR8FVUXYujg2oqIHuKYXU9MX8'; // 👈 PASTE YOUR ACTUAL ANON KEY HERE
         const BUCKET_NAME = 'website-images';
 
         // Initialize the Supabase client
@@ -109,7 +98,7 @@
         async function loadImages() {
             const swiperWrapper = document.querySelector('.swiper-wrapper');
 
-            // Check if environment variables are correctly injected
+            // Check if environment variables are correctly injected (This check will now pass)
             if (SUPABASE_URL === '__SUPABASE_URL__' || SUPABASE_ANON_KEY === '__SUPABASE_ANON_KEY__') {
                 console.error("Supabase environment variables were not injected. Please ensure the build command is configured correctly on Netlify.");
                 swiperWrapper.innerHTML = `<p class="text-red-500">Error: App not configured correctly. Please check Netlify build settings.</p>`;
