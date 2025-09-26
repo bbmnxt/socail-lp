@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your App Name | Landing Page</title>
-    
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
+    <!-- Swiper JS CSS -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
+    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,7 +23,7 @@
             background-color: #000000; /* Pure black background */
         }
 
-        /* Swiper styles for the coverflow effect */
+        /* Swiper styles */
         .swiper-container {
             width: 100%;
             padding-top: 30px;
@@ -30,25 +33,23 @@
         .swiper-slide {
             background-position: center;
             background-size: cover;
-            width: 70%; /* Adjust slide width */
+            width: 80%; /* Adjust slide width */
             height: 560px; /* Adjust slide height */
             border-radius: 24px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            background-color: #000000; /* Ensure slide background is black */
+            background-color: #000000; /* Pure black background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
         }
 
         .swiper-slide img {
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Changed from 'cover' to prevent cropping */
-        }
-        
-        /* Making the 3D effect more subtle */
-        .swiper-3d .swiper-slide-shadow-left,
-        .swiper-3d .swiper-slide-shadow-right {
-            background-image: none;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -56,8 +57,10 @@
 
     <div class="container mx-auto px-4 py-4 flex flex-col min-h-screen max-w-lg">
         
+        <!-- Main Content -->
         <main class="flex-grow flex flex-col items-center justify-center text-center">
             
+            <!-- Marketing Text & CTA -->
             <div class="pt-10 mb-8 flex flex-col items-center justify-center text-center">
                 <h1 class="font-extrabold mb-10 text-[2.7rem] md:text-5xl leading-none md:leading-snug" style="color: #f5f5f7;">
                     UNLOCK THE<br>PRO WITHIN.
@@ -72,74 +75,68 @@
                 </div>
             </div>
 
+            <!-- Swiper Carousel Container -->
             <div class="swiper-container w-full overflow-hidden">
                 <div class="swiper-wrapper">
-                    </div>
+                    <!-- Images will be loaded here by JavaScript -->
+                </div>
             </div>
 
         </main>
     </div>
 
+    <!-- Swiper JS Script -->
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 
+    <!-- Supabase JS Script -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <!-- Initialize Swiper -->
     <script>
-        // --- 1. Supabase Configuration (FOR TESTING) ---
+        // --- 1. Supabase Configuration ---
         const SUPABASE_URL = '__SUPABASE_URL__';
         const SUPABASE_ANON_KEY = '__SUPABASE_ANON_KEY__';
         const BUCKET_NAME = 'website-images';
 
-        // Initialize the Supabase client
+        // Initialize Supabase Client
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // --- 2. Function to Load Images and Start Slider ---
         async function loadImages() {
             const swiperWrapper = document.querySelector('.swiper-wrapper');
-
-            // Check if environment variables are correctly injected (This check will now pass)
-            if (SUPABASE_URL === '__SUPABASE_URL__' || SUPABASE_ANON_KEY === '__SUPABASE_ANON_KEY__') {
-                console.error("Supabase environment variables were not injected. Please ensure the build command is configured correctly on Netlify.");
-                swiperWrapper.innerHTML = `<p class="text-red-500">Error: App not configured correctly. Please check Netlify build settings.</p>`;
+            
+            if (SUPABASE_URL.startsWith('__')) {
+                swiperWrapper.innerHTML = '<div class="swiper-slide"><p class="text-red-500 text-center p-4">Error: App not configured correctly. Environment variables are missing.</p></div>';
                 return;
             }
 
             try {
-                // Get a list of all files in the bucket
-                const { data: files, error } = await supabaseClient
-                    .storage
-                    .from(BUCKET_NAME)
-                    .list();
+                const { data: files, error } = await supabaseClient.storage.from(BUCKET_NAME).list();
 
                 if (error) throw error;
                 if (!files || files.length === 0) {
-                     swiperWrapper.innerHTML = '<p>No images found in bucket.</p>';
+                     swiperWrapper.innerHTML = '<div class="swiper-slide"><p>Connected to Supabase, but no images were found in the bucket.</p></div>';
                      return;
                 }
 
-                // Create a slide for each image
                 for (const file of files) {
-                    const { data } = supabaseClient
-                        .storage
-                        .from(BUCKET_NAME)
-                        .getPublicUrl(file.name);
-                    
+                    const { data } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(file.name);
                     if (data.publicUrl) {
                         const slide = document.createElement('div');
                         slide.className = 'swiper-slide';
-                        slide.innerHTML = `<img src="${data.publicUrl}" alt="${file.name}">`;
+                        slide.innerHTML = `<img src="${data.publicUrl}" alt="${file.name}" onerror="this.parentElement.innerHTML='<p class=\\'text-red-500 p-4\\'>Error loading image: ${file.name}</p>';">`;
                         swiperWrapper.appendChild(slide);
                     }
                 }
-                
+
                 // --- 3. Initialize Swiper AFTER images are loaded ---
                 const swiper = new Swiper('.swiper-container', {
-                    effect: 'slide', // Use the standard slide effect for a single image view
+                    effect: 'slide',
                     grabCursor: true,
                     centeredSlides: true,
-                    slidesPerView: 1, // Show only one slide at a time
-                    loop: true, // Enable continuous looping
+                    slidesPerView: 1,
+                    loop: true,
                     autoplay: {
                         delay: 2500,
                         disableOnInteraction: false,
@@ -147,8 +144,8 @@
                 });
 
             } catch (error) {
-                console.error('Error loading images:', error.message);
-                swiperWrapper.innerHTML = `<p class="text-red-500">Error loading images. Check console and Supabase policies.</p>`;
+                console.error('Error loading images:', error);
+                swiperWrapper.innerHTML = `<div class="swiper-slide"><p class="text-red-500 p-4 text-center">An error occurred: ${error.message}.</p></div>`;
             }
         }
 
@@ -157,3 +154,4 @@
     </script>
 </body>
 </html>
+
